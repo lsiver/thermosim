@@ -93,8 +93,15 @@ public final class CubicEos {
         //this ,after converting, better evaluate to 2ft3
         System.out.println(eos.volumes(323.15, 18997424.2)[0]);
 
-        //this better evaluate to ~190 atm
+        //this better evaluate to ~192.5 atm
         System.out.println(eos.pressure(323.15, 0.0566337/453, PURE)*0.00000986);
+
+        CubicForm RKform = new RKForm();
+        CubicParameters params2 = new RKPureParameters(190.61, 4590000, 0.011);
+        CubicEos eos2 = new CubicEos(RKform, params2);
+
+        //this better evaluate to ~187 atm
+        System.out.println(eos2.pressure(323.15, 0.0566337/453, PURE)*0.00000986);
 
     }
 }
