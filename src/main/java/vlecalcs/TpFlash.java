@@ -31,6 +31,7 @@ public final class TpFlash {
         normalize(y);
         return new FlashResult(beta, x, y, K);
     }
+
 private static void normalize(double[] x) {
     double sum = 0.0;
 
@@ -73,7 +74,6 @@ public static void main(String[] args) {
         System.out.println("x = " + Arrays.toString(r.x()));
         System.out.println("y = " + Arrays.toString(r.y()));
         //Add this as an actual unit test eventually
-
 
 }
 }
