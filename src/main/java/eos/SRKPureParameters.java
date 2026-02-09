@@ -1,5 +1,7 @@
 package eos;
 
+import constants.Constants;
+
 public final class SRKPureParameters implements CubicParameters {
     private final double Tc, Pc, omega;
     private final double a0, b;

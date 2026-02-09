@@ -1,6 +1,8 @@
 package eos;
 import java.util.Arrays;
 
+import constants.Constants;
+
 public final class CubicEos {
     private final CubicForm form;
     private final CubicParameters params;
