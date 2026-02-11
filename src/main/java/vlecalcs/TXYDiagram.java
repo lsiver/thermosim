@@ -7,39 +7,53 @@ import properties.VaporPressureCorrelation;
 
 public final class TXYDiagram {
     private final KModel kModel;
-    public final double[] Tbub = new double[101];
-    public final double[] Tdew = new double[101];
-    public final double[] x = new double[101];
-    public final double[] y = new double[101];
 
     public TXYDiagram(KModel kModel) { this.kModel = kModel; }
 
-    public void genXYDiagram(double P) {
+    public static class VLEPoint {
+        public double targetZ;
+        public double tBubble;
+        public double tDew;
+        public double yEq;
+
+        public VLEPoint(double z, double tb, double td, double y) {
+            this.targetZ = z;
+            this.tBubble = tb;
+            this.tDew = td;
+            this.yEq = y;
+        }
+    }
+
+    public VLEPoint[] genXYDiagram(double P) {
         //Binary sweep
+        VLEPoint[] points = new VLEPoint[101];
+
         BubblePoint bp = new BubblePoint(kModel);
         DewPoint dp = new DewPoint(kModel);
-        double[] xi = {0.0, 1.0};
 
-        for (int i = 0; i< 101; i++) {
-            BubblePoint.Result bpr = bp.solveAtP(P, xi, 360.0);
-            DewPoint.Result dpr = dp.solveAtP(P, xi, 360.0);
-            x[i] = xi[0];
-            xi[0] += 0.01;
-            xi[1] -= 0.01;
+        double guessTbp = 360.0;
+        double guessTdp = 360.0;
 
-            Tbub[i] = bpr.T;
-            Tdew[i] = dpr.T;
+        for (int i = 0; i<= 100; i++) {
+            double zVal = i / 100.0;
+            double[] composition = {zVal, 1.0 - zVal};
+            BubblePoint.Result bpr = bp.solveAtP(P, composition, guessTbp);
+            DewPoint.Result dpr = dp.solveAtP(P, composition, guessTdp);
+
+            guessTbp = bpr.T;
+            guessTdp = dpr.T;
+
+            points[i] = new VLEPoint(zVal, bpr.T, dpr.T, bpr.y[0]);
         }
         
+        return points;
 
     };
 
 
     public static void main(String[] args) {
         double P = 101325.0;
-
-        double[] z = {0.20, 0.80};
-
+        
         VaporPressureCorrelation benzene = AntoineMmHg.of(6.90565, 1211.033, 220.790);
         VaporPressureCorrelation toluene = AntoineMmHg.of(6.95464, 1344.800, 219.480);
 
@@ -47,12 +61,12 @@ public final class TXYDiagram {
 
         TXYDiagram txy = new TXYDiagram(kModel);
 
-        txy.genXYDiagram(P);
+        VLEPoint[] points = txy.genXYDiagram(P);
 
-        for (int i =0;i<txy.Tbub.length;i++) {
-            System.out.println(txy.x[i]);
-            System.out.println("Tbub " + txy.Tbub[i]);
-            System.out.println("TDew " + txy.Tdew[i]);
+        for (int i =0;i<points.length;i++) {
+            System.out.println(points[i].targetZ);
+            System.out.println("Tbub " + points[i].tBubble);
+            System.out.println("TDew " + points[i].tDew);
         }
 
     }
