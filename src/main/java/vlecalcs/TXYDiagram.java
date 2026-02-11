@@ -1,6 +1,7 @@
 package vlecalcs;
 
-import java.util.Arrays;
+import org.knowm.xchart.*;
+import org.knowm.xchart.style.Styler;
 
 import properties.AntoineMmHg;
 import properties.VaporPressureCorrelation;
@@ -50,6 +51,23 @@ public final class TXYDiagram {
 
     };
 
+    public void displayDiagram(double[] x, double[] Tbub, double[] Tdew) {
+        XYChart chart = new XYChartBuilder()
+            .width(800)
+            .height(600)
+            .title("T-x-y Diagram")
+            .xAxisTitle("Mole Fraction (x1, y1)")
+            .yAxisTitle("Temperature (K)")
+            .build();
+
+            chart.getStyler().setLegendPosition(Styler.LegendPosition.InsideNE);
+            chart.getStyler().setMarkerSize(0);
+
+            chart.addSeries("Bubble Point (Liquid)", x, Tbub);
+            chart.addSeries("Dew Point (Vapor)", x, Tdew);
+
+            new SwingWrapper<XYChart>(chart).displayChart();
+    }
 
     public static void main(String[] args) {
         double P = 101325.0;
@@ -68,6 +86,20 @@ public final class TXYDiagram {
             System.out.println("Tbub " + points[i].tBubble);
             System.out.println("TDew " + points[i].tDew);
         }
+
+        double[] x = new double[points.length];
+        double[] tb = new double[points.length];
+        double[] td = new double[points.length];
+
+        for (int i = 0; i < points.length; i++) {
+            x[i] = points[i].targetZ;
+            tb[i] = points[i].tBubble;
+            td[i] = points[i].tDew;
+        }
+
+        txy.displayDiagram(x,tb,td);
+
+
 
     }
 }
