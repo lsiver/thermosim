@@ -17,10 +17,10 @@ public final class TXYDiagram {
         public double yEq;
 
         public VLEPoint(double z, double tb, double td, double y) {
-            this.targetZ = z;
+            this.targetZ = z; //useful for a continuous plot
             this.tBubble = tb;
             this.tDew = td;
-            this.yEq = y;
+            this.yEq = y; //tie-line from x to y
         }
     }
 
@@ -53,7 +53,7 @@ public final class TXYDiagram {
 
     public static void main(String[] args) {
         double P = 101325.0;
-        
+
         VaporPressureCorrelation benzene = AntoineMmHg.of(6.90565, 1211.033, 220.790);
         VaporPressureCorrelation toluene = AntoineMmHg.of(6.95464, 1344.800, 219.480);
 
