@@ -1,10 +1,15 @@
 package database;
 
 import java.sql.*;
+import java.util.ArrayList;
+
+import database.CSVParser;
 
 
 public class DatabaseManager {
     static String url = "jdbc:sqlite:thermodata.db";
+    static CSVParser csvparser = new CSVParser();
+
     public static void createDB() {
         try (Connection conn = DriverManager.getConnection(url)){
             if (conn != null) {
@@ -15,8 +20,68 @@ public class DatabaseManager {
         }
     }
 
+    public static void createAntoineTable() {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS antoine (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                formula TEXT NOT NULL,
+                a_cons REAL NOT NULL,
+                b_cons REAL NOT NULL,
+                c_cons REAL NOT NULL,
+                T_range TEXT,
+                dH_vap REAL NOT NULL,
+                tbp REAL NOT NULL
+                );
+                """;
+
+        try (Connection conn = DriverManager.getConnection(url);
+            Statement stmt = conn.createStatement()){
+
+                stmt.execute(sql);
+                System.out.println("Table created / connected successfully");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void seedAntoineTable() {
+        String path = "src/main/resources/dbseed/antoine_constants.csv";
+        ArrayList<String> textblock = csvparser.CSVParse(path);
+        System.out.println(textblock.get(0));
+
+        for (String chems : textblock) {
+            System.out.println(chems);
+        }
+
+        final record AntoineRecord(String name, String formula, double a, double b, double c, String trange, double dhvap, double tbpnorm) {}
+
+        String sql = """
+                INSERT INTO antoine (name, formula, a_cons, b_cons, c_cons, T_range, dH_vap, tbp)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+                """;
+
+        try (Connection conn = DriverManager.getConnection(url);
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                conn.setAutoCommit(false);
+
+                
+
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+    }
+
     public static void main(String[] args) {
         //createDB();
+        //createAntoineTable();
+        seedAntoineTable();
     }
 
 }
