@@ -60,14 +60,41 @@ public class CSVParser {
         return antoinerecords;
     }
 
+    public PureSpeciesRecord[] pureSpeciesParse(String path) {
+        ArrayList<String> inputtext = CSVParse(path);
+        PureSpeciesRecord[] purespeciesrecords = new PureSpeciesRecord[inputtext.size()];
+
+        int i = 0;
+        for (String chem : inputtext) {
+            String[] values = chem.split(",");
+            String name = values[0];
+            double molar_mass = Double.parseDouble(values[1]);
+            double acentric = Double.parseDouble(values[2]);
+            double Tc = Double.parseDouble(values[3]);
+            double Pc = Double.parseDouble(values[4]);
+            double Zc = Double.parseDouble(values[5]);
+            double Vc = Double.parseDouble(values[6]);
+            double tbpnorm = Double.parseDouble(values[7]);
+
+
+            purespeciesrecords[i] = new PureSpeciesRecord(name, acentric, molar_mass, Tc, Pc, Zc, Vc, tbpnorm);
+            i++;
+        }
+        return purespeciesrecords;
+    }
+    //public record PureSpeciesRecord(String name, double molar_mass, double Tc, double Pc, double Zc, double Vc, double tbpnorm) {
+
     public static void main(String[] args) {
 
         String path = "src/main/resources/dbseed/antoine_constants.csv";
+        String p_path = "src/main/resources/dbseed/pure_species_table.csv";
         CSVParser test = new CSVParser();
         // ArrayList<String> tester = test.CSVParse(path);
         // System.out.println(tester.get(0).split(",")[0]);
 
         AntoineRecord[] antoinerecords = test.antoineParse(path);
+        PureSpeciesRecord[] purespeciesrecords = test.pureSpeciesParse(p_path);
+        System.out.println(purespeciesrecords[0].name());
         System.out.println(antoinerecords[0].formula());
         // System.out.println(test.CSVParse(path));
 //        String line = "";
