@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import database.CSVParser;
+import database.AntoineRecord;
 
 
 public class DatabaseManager {
@@ -48,14 +49,7 @@ public class DatabaseManager {
 
     public static void seedAntoineTable() {
         String path = "src/main/resources/dbseed/antoine_constants.csv";
-        ArrayList<String> textblock = csvparser.CSVParse(path);
-        System.out.println(textblock.get(0));
-
-        for (String chems : textblock) {
-            System.out.println(chems);
-        }
-
-        final record AntoineRecord(String name, String formula, double a, double b, double c, String trange, double dhvap, double tbpnorm) {}
+        AntoineRecord[] antoinerecords = csvparser.antoineParse(path);
 
         String sql = """
                 INSERT INTO antoine (name, formula, a_cons, b_cons, c_cons, T_range, dH_vap, tbp)
@@ -67,21 +61,31 @@ public class DatabaseManager {
 
                 conn.setAutoCommit(false);
 
-                
+                for (AntoineRecord arecord : antoinerecords) {
+                    ps.setString(1, arecord.name());
+                    ps.setString(2, arecord.formula());
+                    ps.setDouble(3, arecord.a());
+                    ps.setDouble(4,arecord.b());
+                    ps.setDouble(5, arecord.c());
+                    ps.setString(6,arecord.trange());
+                    ps.setDouble(7,arecord.dhvap());
+                    ps.setDouble(8, arecord.tbpnorm());
+                    ps.executeUpdate();
+                }
 
-
+                conn.commit();
+                conn.setAutoCommit(true);
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
 
     }
 
     public static void main(String[] args) {
         //createDB();
         //createAntoineTable();
-        seedAntoineTable();
+        // seedAntoineTable();
     }
 
 }
