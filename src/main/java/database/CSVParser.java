@@ -23,6 +23,11 @@ public class CSVParser {
                 returnList.add(line);
 
                 String[] values = line.split(",");
+                // System.out.println("Name " + values[0]);
+                // System.out.println("A " + values[4]);
+                // System.out.println("B " + values[5]);
+                // System.out.println("C " + values[6]);
+                // System.out.println("D " + values[7]);
                 //System.out.println(values[0]);
 
 //                System.out.println(values.length);
@@ -82,20 +87,52 @@ public class CSVParser {
         }
         return purespeciesrecords;
     }
-    //public record PureSpeciesRecord(String name, double molar_mass, double Tc, double Pc, double Zc, double Vc, double tbpnorm) {
+
+    public CpGasIdealRecord[] CpGasIdealParse(String path) {
+        ArrayList<String> inputtext = CSVParse(path);
+        CpGasIdealRecord[] cpgasrecords = new CpGasIdealRecord[inputtext.size()];
+
+        int i = 0;
+        for (String chem : inputtext) {
+            String[] values = chem.split(",");
+            String name = values[0];
+            String formula = values[1];
+            double Tmax = Double.parseDouble(values[2]);
+            double Cpig = Double.parseDouble(values[3]);
+            double A = Double.parseDouble(values[4]);
+            double B = Double.parseDouble(values[5]) / 1000.0;
+            double C = Double.parseDouble(values[6]) / 1000000.0;
+            double D = Double.parseDouble(values[7]) * 100000.0;
+
+            cpgasrecords[i] = new CpGasIdealRecord(name, formula, Tmax, Cpig, A, B, C, D);
+            i++;
+
+        }
+        return cpgasrecords;
+    }
 
     public static void main(String[] args) {
 
         String path = "src/main/resources/dbseed/antoine_constants.csv";
         String p_path = "src/main/resources/dbseed/pure_species_table.csv";
+        String cp_path = "src/main/resources/dbseed/c1_heat_cap_of_gasess_ideal.csv";
         CSVParser test = new CSVParser();
         // ArrayList<String> tester = test.CSVParse(path);
         // System.out.println(tester.get(0).split(",")[0]);
 
         AntoineRecord[] antoinerecords = test.antoineParse(path);
         PureSpeciesRecord[] purespeciesrecords = test.pureSpeciesParse(p_path);
-        System.out.println(purespeciesrecords[0].name());
-        System.out.println(antoinerecords[0].formula());
+        CpGasIdealRecord[] cpgasidealrecords = test.CpGasIdealParse(cp_path);
+//         System.out.println("records.length = " + cpgasidealrecords.length);
+// for (int i = 0; i < cpgasidealrecords.length; i++) {
+//     System.out.println(i + ": [" + cpgasidealrecords[i].name() + "] [" + cpgasidealrecords[i].formula() + "]");
+// }
+        // for (CpGasIdealRecord records : cpgasidealrecords) {
+        //     System.out.println(records.name() + " " + records.formula());
+        // }
+        // System.out.println(purespeciesrecords[0].name());
+        // System.out.println(antoinerecords[0].formula());
+        // System.out.println(cpgasidealrecords[0].name());
         // System.out.println(test.CSVParse(path));
 //        String line = "";
 //

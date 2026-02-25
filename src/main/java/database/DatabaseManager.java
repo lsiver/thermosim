@@ -150,12 +150,82 @@ public class DatabaseManager {
         }
     }
 
+
+
+    public static void createCpGasIdealTable() {
+                String sql = """
+                CREATE TABLE IF NOT EXISTS cpgasideal (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                formula STRING NOT NULL,
+                tmax REAL NOT NULL,
+                cpig REAL NOT NULL,
+                a REAL NOT NULL,
+                b REAL NOT NULL,
+                c REAL NOT NULL,
+                d REAL NOT NULL
+                );
+                """;
+
+                /*
+                Tmax K
+                cpig @ 298K / R
+                Calculated Cp [=] Cp(ig) / R
+                 */
+
+        try (Connection conn = DriverManager.getConnection(url);
+            Statement stmt = conn.createStatement()){
+
+                stmt.execute(sql);
+                System.out.println("Table created / connected successfully");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void seedCpGasIdealTable() {
+        String path = "src/main/resources/dbseed/c1_heat_cap_of_gasess_ideal.csv";
+        CpGasIdealRecord[] cpgasidealrecords = csvparser.CpGasIdealParse(path);
+
+        String sql = """
+                INSERT INTO cpgasideal (name, formula, tmax, cpig, a, b, c, d)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+                """;
+
+        try (Connection conn = DriverManager.getConnection(url);
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                conn.setAutoCommit(false);
+
+                for (CpGasIdealRecord arecord : cpgasidealrecords) {
+                    ps.setString(1, arecord.name());
+                    ps.setString(2, arecord.formula());
+                    ps.setDouble(3, arecord.Tmax());
+                    ps.setDouble(4, arecord.Cpig());
+                    ps.setDouble(5, arecord.A());
+                    ps.setDouble(6, arecord.B());
+                    ps.setDouble(7, arecord.C());
+                    ps.setDouble(8, arecord.D());
+                    ps.executeUpdate();
+                }
+
+                conn.commit();
+                conn.setAutoCommit(true);
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
-        //createDB();
-        //createAntoineTable();
+        // createDB();
+        // createAntoineTable();
         // seedAntoineTable();
-        //createPureSpeciesTable();
+        // createPureSpeciesTable();
         // seedPureSpeciesTable();
+        // createCpGasIdealTable();
+        // seedCpGasIdealTable();
     }
 
 }
