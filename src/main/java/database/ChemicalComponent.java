@@ -7,6 +7,7 @@ public class ChemicalComponent {
     private final double criticalTemperature;
     private final double criticalPressure;
     private final double acentricFactor;
+    private final double[] cpCoefficients;
 
     public ChemicalComponent(String name, double molarMass, double criticalTemperature, double criticalPressure, double acentricFactor) {
         this.name = name;
@@ -15,5 +16,12 @@ public class ChemicalComponent {
         this.criticalTemperature = criticalTemperature;
         this.criticalPressure = criticalPressure;
         this.acentricFactor = acentricFactor;
+        this.cpCoefficients = new double[]{0.0,0.0,0.0,0.0,0.0};
     }
+
+    public double getCriticalTemperature() { return criticalTemperature; }
+    public double getCriticalPressure() { return criticalPressure; }
+    public double getAcentricFactor() { return acentricFactor; }
+    public double[] getcpCoefficients() { return cpCoefficients; }
+
 }
